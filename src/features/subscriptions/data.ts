@@ -1,0 +1,217 @@
+import type { AddOnItem, BillingHistoryItem, ComparisonRow, HostingPlan, TrustBadge } from "./types";
+
+export const hostingPlans: HostingPlan[] = [
+  {
+    id: "starter",
+    name: "Starter",
+    tagline: "Start simple hosting",
+    description: "Great for basic websites and lightweight projects.",
+    ctaLabel: "Start with Starter",
+    prices: { monthly: 3.99, yearly: 2.49, yearlyOriginal: 4.99, renewalMonthly: 3.99 },
+    features: [
+      { label: "1 Website", included: true },
+      { label: "10 GB NVMe Storage", included: true },
+      { label: "Weekly Backups", included: true },
+      { label: "Managed SSL", included: true },
+      { label: "Priority Support", included: false },
+    ],
+    useCases: ["Landing pages", "Personal portfolios", "Simple business sites"],
+    projectTypes: ["Marketing website", "Portfolio", "Small blog"],
+    technicalSpecs: ["1 vCPU", "1 GB RAM", "Managed runtime"],
+    includedExtras: ["SSL", "CDN", "One-click WordPress installer"],
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    tagline: "Best value hosting plan",
+    description: "Higher limits and stronger reliability for growing businesses.",
+    featured: true,
+    ctaLabel: "Choose Premium",
+    prices: { monthly: 8.99, yearly: 5.49, yearlyOriginal: 10.99, renewalMonthly: 8.99 },
+    features: [
+      { label: "25 Websites", included: true },
+      { label: "50 GB NVMe Storage", included: true },
+      { label: "Daily Backups", included: true },
+      { label: "Custom Domain Support", included: true },
+      { label: "Priority Support", included: true },
+    ],
+    useCases: ["SMB websites", "eCommerce starters", "Agency client sites"],
+    projectTypes: ["Storefront", "Agency websites", "Business website"],
+    technicalSpecs: ["2 vCPU", "2 GB RAM", "Advanced caching + staging"],
+    includedExtras: ["SSL", "CDN", "Staging", "Threat monitoring"],
+  },
+  {
+    id: "business",
+    name: "Business",
+    tagline: "Scale confidently",
+    description: "Enterprise-grade hosting security and speed for high traffic.",
+    ctaLabel: "Get Business",
+    prices: { monthly: 14.99, yearly: 9.99, yearlyOriginal: 17.99, renewalMonthly: 14.99 },
+    features: [
+      { label: "100 Websites", included: true },
+      { label: "200 GB NVMe Storage", included: true },
+      { label: "Daily + On-demand Backups", included: true },
+      { label: "Advanced Security Suite", included: true },
+      { label: "Priority Support", included: true },
+    ],
+    useCases: ["High-traffic stores", "Growing brands", "Production workloads"],
+    projectTypes: ["Large eCommerce", "High traffic content sites", "Business-critical apps"],
+    technicalSpecs: ["4 vCPU", "4 GB RAM", "Dedicated IO share"],
+    includedExtras: ["SSL", "CDN", "Staging", "WAF", "Managed migration"],
+  },
+  {
+    id: "cloud-pro",
+    name: "Cloud Pro",
+    tagline: "Maximum performance",
+    description: "For mission-critical platforms requiring peak stability and control.",
+    ctaLabel: "Upgrade to Cloud Pro",
+    prices: { monthly: 29.99, yearly: 19.99, yearlyOriginal: 34.99, renewalMonthly: 29.99 },
+    features: [
+      { label: "300 Websites", included: true },
+      { label: "500 GB NVMe Storage", included: true },
+      { label: "Real-time Backups", included: true },
+      { label: "Dedicated Support Channel", included: true },
+      { label: "Performance Boost Suite", included: true },
+    ],
+    useCases: ["Enterprise workloads", "Critical APIs", "Global deployments"],
+    projectTypes: ["Enterprise platform", "Mission-critical app", "Global website network"],
+    technicalSpecs: ["8 vCPU", "8 GB RAM", "Autoscaling + failover"],
+    includedExtras: ["SSL", "CDN", "Staging", "WAF", "Priority response SLA"],
+  },
+];
+
+export const saasPlans: HostingPlan[] = [
+  {
+    id: "starter",
+    name: "SaaS Starter",
+    tagline: "Launch your MVP fast",
+    description: "For early-stage SaaS projects that need fast setup and predictable cost.",
+    ctaLabel: "Choose SaaS Starter",
+    prices: { monthly: 12.99, yearly: 8.99, yearlyOriginal: 15.99, renewalMonthly: 12.99 },
+    features: [
+      { label: "1 SaaS Project", included: true },
+      { label: "10K Monthly Active Users", included: true },
+      { label: "Basic Team Roles", included: true },
+      { label: "Managed SSL + Domain", included: true },
+      { label: "Priority Support", included: false },
+    ],
+    useCases: ["MVP SaaS", "Internal tools SaaS", "Niche micro-SaaS"],
+    projectTypes: ["CRM SaaS", "Booking SaaS", "Admin dashboard SaaS"],
+    technicalSpecs: ["2 vCPU", "2 GB RAM", "Managed DB + Queue"],
+    includedExtras: ["SSL", "CDN", "Basic analytics", "Email integration"],
+  },
+  {
+    id: "premium",
+    name: "SaaS Growth",
+    tagline: "Best for product-market fit stage",
+    description: "Scale users and team workflows with stronger performance and security.",
+    featured: true,
+    ctaLabel: "Choose SaaS Growth",
+    prices: { monthly: 29.99, yearly: 19.99, yearlyOriginal: 36.99, renewalMonthly: 29.99 },
+    features: [
+      { label: "5 SaaS Projects", included: true },
+      { label: "100K Monthly Active Users", included: true },
+      { label: "RBAC + Audit Logs", included: true },
+      { label: "Daily Snapshots", included: true },
+      { label: "Priority Support", included: true },
+    ],
+    useCases: ["B2B SaaS", "Marketplace SaaS", "Team collaboration tools"],
+    projectTypes: ["HR SaaS", "Project management SaaS", "Analytics SaaS"],
+    technicalSpecs: ["4 vCPU", "8 GB RAM", "Managed Postgres cluster"],
+    includedExtras: ["CDN", "Staging", "SSO starter", "Threat monitoring"],
+  },
+  {
+    id: "business",
+    name: "SaaS Scale",
+    tagline: "For high-growth products",
+    description: "Multi-tenant ready platform with advanced observability and resilience.",
+    ctaLabel: "Choose SaaS Scale",
+    prices: { monthly: 59.99, yearly: 39.99, yearlyOriginal: 72.99, renewalMonthly: 59.99 },
+    features: [
+      { label: "15 SaaS Projects", included: true },
+      { label: "500K Monthly Active Users", included: true },
+      { label: "Advanced Security Suite", included: true },
+      { label: "Hourly Backups", included: true },
+      { label: "Priority Support", included: true },
+    ],
+    useCases: ["Scaling SaaS", "Compliance-heavy SaaS", "High-concurrency SaaS"],
+    projectTypes: ["Fintech SaaS", "Healthcare SaaS", "Workflow automation SaaS"],
+    technicalSpecs: ["8 vCPU", "16 GB RAM", "Dedicated DB replicas"],
+    includedExtras: ["WAF", "SIEM hooks", "Managed migration", "SLA support"],
+  },
+  {
+    id: "cloud-pro",
+    name: "SaaS Enterprise",
+    tagline: "Mission-critical reliability",
+    description: "Enterprise operations, controls, and support for critical SaaS workloads.",
+    ctaLabel: "Contact for Enterprise",
+    prices: { monthly: 119.99, yearly: 84.99, yearlyOriginal: 139.99, renewalMonthly: 119.99 },
+    features: [
+      { label: "Unlimited SaaS Projects", included: true },
+      { label: "Unlimited Monthly Active Users", included: true },
+      { label: "Global Failover + DR", included: true },
+      { label: "Real-time Backups", included: true },
+      { label: "Dedicated Support Channel", included: true },
+    ],
+    useCases: ["Global SaaS", "Enterprise B2B SaaS", "Critical customer platforms"],
+    projectTypes: ["AI SaaS", "Enterprise Suite", "Multi-region SaaS platform"],
+    technicalSpecs: ["16 vCPU", "32 GB RAM", "Multi-region active/active"],
+    includedExtras: ["Custom SLA", "Private networking", "Compliance toolkit", "Priority incident desk"],
+  },
+];
+
+export const saasProjects = [
+  { id: "proj-crm", name: "ClientFlow CRM", type: "CRM SaaS", status: "active", monthlyUsers: "12,400" },
+  { id: "proj-booking", name: "Schedly", type: "Booking SaaS", status: "active", monthlyUsers: "8,120" },
+  { id: "proj-analytics", name: "MetricPilot", type: "Analytics SaaS", status: "beta", monthlyUsers: "2,980" },
+  { id: "proj-hr", name: "PeopleStack", type: "HR SaaS", status: "active", monthlyUsers: "5,640" },
+];
+
+export const trustBadges: TrustBadge[] = [
+  { id: "money-back", title: "30-day money-back guarantee", subtitle: "Risk-free onboarding" },
+  { id: "support", title: "24/7 expert support", subtitle: "Help when you need it" },
+  { id: "ssl", title: "Free SSL", subtitle: "Encryption enabled by default" },
+  { id: "uptime", title: "99.9% uptime", subtitle: "Reliable infrastructure" },
+];
+
+export const comparisonRows: ComparisonRow[] = [
+  { key: "storage", label: "Storage", values: { starter: "10 GB", premium: "50 GB", business: "200 GB", "cloud-pro": "500 GB" } },
+  { key: "websites", label: "Websites", values: { starter: "1", premium: "25", business: "100", "cloud-pro": "300" } },
+  { key: "bandwidth", label: "Bandwidth", values: { starter: "100 GB", premium: "Unmetered", business: "Unmetered", "cloud-pro": "Unmetered" } },
+  { key: "email", label: "Email Accounts", values: { starter: "10", premium: "100", business: "500", "cloud-pro": "Unlimited" } },
+  { key: "backups", label: "Backups", values: { starter: "Weekly", premium: "Daily", business: "Daily + On-demand", "cloud-pro": "Real-time" } },
+  { key: "domain", label: "Free Domain", values: { starter: false, premium: true, business: true, "cloud-pro": true } },
+  { key: "cdn", label: "CDN", values: { starter: true, premium: true, business: true, "cloud-pro": true } },
+  { key: "staging", label: "Staging", values: { starter: false, premium: true, business: true, "cloud-pro": true } },
+  { key: "support", label: "Priority Support", values: { starter: false, premium: true, business: true, "cloud-pro": true } },
+  { key: "security", label: "Advanced Security", values: { starter: false, premium: false, business: true, "cloud-pro": true } },
+  { key: "performance", label: "Performance Tier", values: { starter: "Standard", premium: "Enhanced", business: "High", "cloud-pro": "Max" } },
+];
+
+export const saasComparisonRows: ComparisonRow[] = [
+  { key: "projects", label: "Projects", values: { starter: "1", premium: "5", business: "15", "cloud-pro": "Unlimited" } },
+  { key: "mau", label: "Monthly Active Users", values: { starter: "10K", premium: "100K", business: "500K", "cloud-pro": "Unlimited" } },
+  { key: "roles", label: "Role Management", values: { starter: "Basic", premium: "RBAC", business: "Advanced RBAC", "cloud-pro": "Enterprise IAM" } },
+  { key: "backups", label: "Backups", values: { starter: "Daily", premium: "Daily", business: "Hourly", "cloud-pro": "Real-time" } },
+  { key: "security", label: "Security", values: { starter: "Standard", premium: "Enhanced", business: "Advanced", "cloud-pro": "Enterprise" } },
+  { key: "support", label: "Support", values: { starter: false, premium: true, business: true, "cloud-pro": true } },
+  { key: "sso", label: "SSO", values: { starter: false, premium: true, business: true, "cloud-pro": true } },
+  { key: "audit", label: "Audit Logs", values: { starter: false, premium: true, business: true, "cloud-pro": true } },
+  { key: "sla", label: "SLA", values: { starter: false, premium: false, business: true, "cloud-pro": true } },
+  { key: "deployment", label: "Deployment Model", values: { starter: "Shared", premium: "Isolated", business: "Dedicated", "cloud-pro": "Multi-region" } },
+];
+
+export const addOns: AddOnItem[] = [
+  { id: "domain-privacy", name: "Domain Privacy", description: "Hide public WHOIS details.", monthlyPrice: 1.49, yearlyPrice: 14.9 },
+  { id: "priority-support", name: "Priority Support", description: "Faster support queue.", monthlyPrice: 4.99, yearlyPrice: 49.9 },
+  { id: "daily-backups", name: "Daily Backups", description: "Retain 30 restore points.", monthlyPrice: 2.99, yearlyPrice: 29.9 },
+  { id: "migration", name: "Managed Migration", description: "Hands-on migration service.", monthlyPrice: 0, yearlyPrice: 19.0 },
+  { id: "security", name: "Advanced Security", description: "WAF + malware hardening.", monthlyPrice: 3.49, yearlyPrice: 34.9 },
+];
+
+export const billingHistory: BillingHistoryItem[] = [
+  { id: "INV-221", date: "2026-02-14", description: "Premium SaaS Plan - Annual", amount: 65.88, status: "paid" },
+  { id: "INV-187", date: "2025-02-14", description: "Starter SaaS Plan - Annual", amount: 29.88, status: "paid" },
+  { id: "INV-155", date: "2025-01-10", description: "Domain Privacy Add-on", amount: 14.9, status: "paid" },
+];
+
