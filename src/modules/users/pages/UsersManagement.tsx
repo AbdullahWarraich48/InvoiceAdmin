@@ -5,6 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
 type AppRole = "super_admin" | "generator" | "viewer_printer";
@@ -17,9 +27,17 @@ interface UserRow {
   roles: AppRole[];
 }
 
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 export default function UsersManagement() {
   const [users, setUsers] = useState<UserRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [credentialsOpen, setCredentialsOpen] = useState(false);
+  const [credentialUser, setCredentialUser] = useState<UserRow | null>(null);
+  const [credEmail, setCredEmail] = useState("");
+  const [credPassword, setCredPassword] = useState("");
+  const [credConfirmPassword, setCredConfirmPassword] = useState("");
+  const [credSaving, setCredSaving] = useState(false);
 
   const loadUsers = async () => {
     setLoading(true);
@@ -27,21 +45,84 @@ export default function UsersManagement() {
       const data = await api.getUsers();
       setUsers(data);
     } catch (error) {
-      console.error('Failed to load users:', error);
+      console.error("Failed to load users:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => {
+    void loadUsers();
+  }, []);
+
+  const handleOpenCredentials = (user: UserRow) => {
+    setCredentialUser(user);
+    setCredEmail(user.email);
+    setCredPassword("");
+    setCredConfirmPassword("");
+    setCredentialsOpen(true);
+  };
+
+  const handleCloseCredentials = () => {
+    setCredentialsOpen(false);
+    setCredentialUser(null);
+    setCredPassword("");
+    setCredConfirmPassword("");
+  };
+
+  const handleSaveCredentials = async () => {
+    if (!credentialUser) return;
+
+    const nextEmail = credEmail.trim().toLowerCase();
+    if (!nextEmail) {
+      toast.error("Email is required");
+      return;
+    }
+    if (!EMAIL_PATTERN.test(nextEmail)) {
+      toast.error("Enter a valid email address");
+      return;
+    }
+
+    const pwd = credPassword.trim();
+    const confirm = credConfirmPassword.trim();
+    if (pwd.length > 0 || confirm.length > 0) {
+      if (pwd.length < 8) {
+        toast.error("Password must be at least 8 characters");
+        return;
+      }
+      if (pwd !== confirm) {
+        toast.error("Passwords do not match");
+        return;
+      }
+    }
+
+    const payload: { email: string; password?: string } = { email: nextEmail };
+    if (pwd.length > 0) {
+      payload.password = pwd;
+    }
+
+    setCredSaving(true);
+    try {
+      await api.updateUser(credentialUser.id, payload);
+      toast.success("Login details updated");
+      handleCloseCredentials();
+      await loadUsers();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update user";
+      toast.error(message);
+    } finally {
+      setCredSaving(false);
+    }
+  };
 
   const toggleActive = async (userId: string, currentStatus: boolean) => {
     try {
       await api.updateUser(userId, { is_active: !currentStatus });
       toast.success(currentStatus ? "User deactivated" : "User activated");
-      loadUsers();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update user");
+      await loadUsers();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update user";
+      toast.error(message);
     }
   };
 
@@ -49,17 +130,17 @@ export default function UsersManagement() {
     try {
       await api.updateUser(userId, { roles: [role] });
       toast.success("Role updated");
-      loadUsers();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update role");
+      await loadUsers();
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Failed to update role";
+      toast.error(message);
     }
   };
 
-  const roleLabel: Record<AppRole, string> = {
-    super_admin: "Super Admin",
-    generator: "Generator",
-    viewer_printer: "Viewer/Printer",
-  };
+  const credDialogTitleId = "user-credentials-title";
+  const credEmailId = "admin-user-email";
+  const credPasswordId = "admin-user-password";
+  const credConfirmId = "admin-user-password-confirm";
 
   return (
     <div className="space-y-6">
@@ -107,10 +188,20 @@ export default function UsersManagement() {
                         </SelectContent>
                       </Select>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="space-x-2">
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        aria-label={`Edit email and password for ${u.email}`}
+                        onClick={() => handleOpenCredentials(u)}
+                      >
+                        Email &amp; password
+                      </Button>
                       <Button
                         variant={u.is_active ? "outline" : "default"}
                         size="sm"
+                        aria-label={u.is_active ? `Deactivate ${u.email}` : `Activate ${u.email}`}
                         onClick={() => toggleActive(u.id, u.is_active)}
                       >
                         {u.is_active ? "Deactivate" : "Activate"}
@@ -123,6 +214,62 @@ export default function UsersManagement() {
           )}
         </CardContent>
       </Card>
+
+      <Dialog open={credentialsOpen} onOpenChange={(open) => !open && handleCloseCredentials()}>
+        <DialogContent className="sm:max-w-md" aria-labelledby={credDialogTitleId}>
+          <DialogHeader>
+            <DialogTitle id={credDialogTitleId}>
+              Login details{credentialUser ? ` — ${credentialUser.name || credentialUser.email}` : ""}
+            </DialogTitle>
+            <DialogDescription>
+              Update this user&apos;s email and optionally set a new password. Leave password blank to keep the
+              current one.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-2">
+              <Label htmlFor={credEmailId}>Email</Label>
+              <Input
+                id={credEmailId}
+                type="email"
+                autoComplete="email"
+                value={credEmail}
+                onChange={(e) => setCredEmail(e.target.value)}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor={credPasswordId}>New password</Label>
+              <Input
+                id={credPasswordId}
+                type="password"
+                autoComplete="new-password"
+                value={credPassword}
+                onChange={(e) => setCredPassword(e.target.value)}
+                placeholder="Leave blank to keep current"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor={credConfirmId}>Confirm new password</Label>
+              <Input
+                id={credConfirmId}
+                type="password"
+                autoComplete="new-password"
+                value={credConfirmPassword}
+                onChange={(e) => setCredConfirmPassword(e.target.value)}
+                placeholder="Leave blank to keep current"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={handleCloseCredentials} disabled={credSaving}>
+              Cancel
+            </Button>
+            <Button type="button" onClick={() => void handleSaveCredentials()} disabled={credSaving}>
+              {credSaving ? "Saving…" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
